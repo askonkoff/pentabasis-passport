@@ -56,9 +56,13 @@ function memStore () {
 // ---------------------------------------------------------------------------
 function pgStore () {
   const { Pool } = pg
+  // Railway's private network (postgres.railway.internal) speaks plain TCP — no
+  // SSL. Any external host (Neon, Supabase, Railway public proxy) gets lenient
+  // SSL. So enable SSL everywhere EXCEPT the internal host / explicit disable.
+  const useSsl = !/railway\.internal/.test(CONN) && !/sslmode=disable/.test(CONN)
   const pool = new Pool({
     connectionString: CONN,
-    ssl: { rejectUnauthorized: false },
+    ssl: useSsl ? { rejectUnauthorized: false } : false,
     max: 3
   })
 
