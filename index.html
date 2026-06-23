@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Пентабазис · Паспорт проекта</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#23231f;--muted:#6b6a63;--hint:#94938c;--line:#e6e4dc;--bg:#fbfaf7;--card:#fff;
+  --coral:#d85a30;
+  --coral-bg:#faece7;--coral-ink:#712b13;
+  --teal-bg:#e1f5ee;--teal-ink:#085041;
+  --blue-bg:#e6f1fb;--blue-ink:#0c447c;
+  --purple-bg:#eeedfe;--purple-ink:#3c3489;
+  --amber-bg:#faeeda;--amber-ink:#633806;
+  --gray-bg:#f1efe8;--gray-ink:#2c2c2a;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.45;-webkit-font-smoothing:antialiased}
+.page{max-width:1060px;margin:0 auto;padding:22px 26px 44px}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 18px}
+.toolbar button{font:inherit;font-size:13px;font-weight:500;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 14px;cursor:pointer}
+.toolbar button:hover{background:#f4f2ec}
+.toolbar .primary{background:var(--coral);border-color:var(--coral);color:#fff}
+.toolbar .primary:hover{background:#c14d27}
+.toolbar .spacer{flex:1}
+.toolbar .saved{font-size:12px;color:var(--hint)}
+header.doc{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;border-bottom:2px solid var(--ink);padding-bottom:11px;margin-bottom:15px}
+.kick{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--coral);font-weight:600;margin:0 0 5px}
+h1{font-size:25px;font-weight:700;margin:0;letter-spacing:-.01em}
+.brandwrap{display:flex;align-items:center;gap:11px}
+.brandtxt{text-align:right;font-size:10.5px;color:var(--muted);line-height:1.45}
+.brandtxt b{display:block;color:var(--ink);font-weight:700;font-size:12px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field>span{font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--hint);font-weight:600}
+.field input,.field select{font:inherit;font-size:13px;font-weight:500;color:var(--ink);border:none;border-bottom:1px solid var(--line);padding:5px 2px;background:transparent}
+.field input:focus,.field select:focus{outline:none;border-bottom-color:var(--coral)}
+.field select{cursor:pointer}
+.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:0 0 12px}
+.refs{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;background:#f6f4ee;border:1px solid var(--line);border-radius:10px;padding:8px 13px;margin:0 0 11px}
+.strip{display:grid;grid-template-columns:2fr .8fr;gap:14px;background:#eef6f2;border:1px solid #d6e7de;border-radius:10px;padding:8px 13px;margin:0 0 13px}
+.dealwrap{display:flex;gap:8px;align-items:center}
+.dealwrap input{flex:1}
+.dealwrap a{font-size:14px;font-weight:700;color:var(--coral);text-decoration:none;border:1px solid var(--line);border-radius:7px;padding:4px 9px;line-height:1.2}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:7px}
+.core{border:1.5px solid var(--coral);margin-bottom:13px}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:3px 11px;border-radius:999px}
+.name{font-size:14.5px;font-weight:600}
+.q{font-size:11.5px;color:var(--hint);line-height:1.45;margin:0}
+textarea{font:inherit;font-size:12.5px;color:var(--ink);width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;resize:vertical;min-height:54px;background:#fff}
+textarea:focus{outline:none;border-color:var(--coral)}
+.sub{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.subcol{border-left:3px solid var(--line);padding-left:11px;display:flex;flex-direction:column;gap:6px}
+.subcol.in{border-left-color:#378ada}
+.subcol.mkt{border-left-color:#d85a30}
+.subcol h4{font-size:12.5px;font-weight:700;margin:0}
+.subcol h4 small{font-weight:600;color:var(--hint);font-size:11px}
+.subcol textarea{min-height:48px}
+.scopelab{font-size:11.5px;font-weight:700;color:#a32d2d;margin:5px 0 0}
+.mlabel{font-size:11.5px;font-weight:700;color:var(--ink);margin:6px 0 3px}
+.collapsible>summary{cursor:pointer;list-style:none;outline:none}
+.collapsible>summary::-webkit-details-marker{display:none}
+.collapsible>summary.mlabel{display:flex;align-items:center;justify-content:space-between}
+.collapsible>summary .chev{color:var(--hint);font-size:11px;transition:transform .15s}
+.collapsible[open]>summary .chev{transform:rotate(180deg)}
+.mini{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.mrow{display:grid;grid-template-columns:1fr 130px;gap:8px}
+.rrow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.mini input{font:inherit;font-size:12px;color:var(--ink);border:none;border-bottom:1px solid var(--line);padding:4px 2px;background:transparent}
+.mini input:focus{outline:none;border-bottom-color:var(--coral)}
+.raci{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.money{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.full{grid-column:1/-1}
+.footer-card{display:grid;grid-template-columns:2.2fr 1fr 1fr 1.1fr;gap:14px;background:#f4f2ec;border:1px solid var(--line);border-radius:10px;padding:9px 13px;margin-top:14px;align-items:end}
+@media (max-width:760px){.meta,.refs,.strip,.footer-card{grid-template-columns:1fr 1fr}.grid,.sub,.mrow{grid-template-columns:1fr}}
+@media print{
+  @page{size:A4 landscape;margin:8mm}
+  body{background:#fff;font-size:8.5pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .page{max-width:none;margin:0;padding:0}
+  .toolbar{display:none}
+  header.doc{margin-bottom:5px;padding-bottom:4px}
+  h1{font-size:16pt}
+  .meta{margin-bottom:6px;gap:11px}
+  .refs{margin-bottom:6px;padding:5px 11px;gap:11px}
+  .strip{margin-bottom:6px;padding:5px 11px;gap:11px}
+  .card{padding:6px 9px;gap:3px;break-inside:avoid;border-radius:7px}
+  .core{margin-bottom:6px}
+  textarea{min-height:26px;border-color:#cfcdc4}
+  .subcol textarea{min-height:26px}
+  [data-k="scope_out"]{min-height:20px}
+  .mlabel{margin:3px 0 2px}
+  .mini{gap:3px;margin-top:2px}
+  .collapsible:not([open]){display:none}
+  .collapsible .chev{display:none}
+  .grid{gap:7px}
+  .money{margin-top:4px}
+  .footer-card{margin-top:6px;padding:5px 11px;gap:11px}
+  .q{font-size:8pt}
+  .field>span{font-size:7.5pt}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="toolbar">
+    <button class="primary" id="print">Печать / сохранить PDF</button>
+    <button id="clear">Очистить</button>
+    <span class="spacer"></span>
+    <span class="saved" id="saved">Изменения сохраняются автоматически</span>
+  </div>
+
+  <header class="doc">
+    <div>
+      <p class="kick">Пентабазис · 5+1 базовых вопросов</p>
+      <h1>Паспорт проекта</h1>
+    </div>
+    <div class="brandwrap">
+      <div class="brandtxt"><b>Старт проекта</b>методика РИМ</div>
+      <svg width="58" height="58" viewBox="0 0 60 60" aria-hidden="true">
+        <polygon points="30,5 55,24 45.5,54 14.5,54 5,24" fill="none" stroke="#d85a30" stroke-width="1.6"/>
+        <g stroke="#d85a30" stroke-width="1.1" opacity=".55">
+          <line x1="30" y1="31" x2="30" y2="5"/><line x1="30" y1="31" x2="55" y2="24"/>
+          <line x1="30" y1="31" x2="45.5" y2="54"/><line x1="30" y1="31" x2="14.5" y2="54"/>
+          <line x1="30" y1="31" x2="5" y2="24"/>
+        </g>
+        <circle cx="30" cy="31" r="6.5" fill="#d85a30"/>
+      </svg>
+    </div>
+  </header>
+
+  <div class="meta">
+    <div class="field"><span>Проект</span><input type="text" data-k="proj" placeholder="Название"></div>
+    <div class="field"><span>Заказчик / спонсор</span><input type="text" data-k="sponsor" placeholder="Кто заказывает и платит"></div>
+    <div class="field"><span>Владелец</span><input type="text" data-k="owner" placeholder="Кто отвечает"></div>
+    <div class="field"><span>Дата старта</span><input type="date" data-k="date"></div>
+  </div>
+
+  <div class="refs">
+    <div class="field"><span>Ссылка на сделку (Notion)</span>
+      <span class="dealwrap"><input type="url" data-k="deal_url" placeholder="https://notion.so/…"><a id="deal-open" href="#" target="_blank" rel="noopener" title="Открыть сделку в Notion">↗</a></span>
+    </div>
+    <div class="field"><span>Связь со стратегией</span><input type="text" data-k="strategy" placeholder="напр. ключевой приоритет квартала"></div>
+  </div>
+
+  <div class="strip">
+    <div class="field"><span>Критерий успеха — одной строкой</span><input type="text" data-k="success" placeholder="Проект успешен, если…"></div>
+    <div class="field"><span>к дате</span><input type="date" data-k="success_date"></div>
+  </div>
+
+  <div class="card core">
+    <div class="row">
+      <span class="chip" style="background:var(--coral-bg);color:var(--coral-ink)">Зачем · для кого</span>
+      <span class="name">Проблема</span>
+    </div>
+    <div class="sub">
+      <div class="subcol in">
+        <h4>Внутри компании <small>— зачем нам</small></h4>
+        <p class="q">Бизнес-результат, риск или стратегический рычаг. Что теряем, если не делать или отложим на квартал?</p>
+        <textarea data-k="why_in" placeholder="…"></textarea>
+      </div>
+      <div class="subcol mkt">
+        <h4>Для рынка / клиента</h4>
+        <p class="q">Для кого на рынке? Чью боль решаем, почему выберут нас и почему именно сейчас?</p>
+        <textarea data-k="why_mkt" placeholder="…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="row"><span class="chip" style="background:var(--teal-bg);color:var(--teal-ink)">Что</span><span class="name">Цели, результаты, эффекты</span></div>
+      <p class="q">Что получим на выходе? Цели, эффекты, целевые показатели. Промежуточные и финальные результаты.</p>
+      <textarea data-k="what" placeholder="…"></textarea>
+      <p class="scopelab">✗ Не входит в проект (вне scope)</p>
+      <textarea data-k="scope_out" placeholder="Что осознанно НЕ делаем в этом проекте" style="min-height:40px"></textarea>
+    </div>
+
+    <div class="card">
+      <div class="row"><span class="chip" style="background:var(--blue-bg);color:var(--blue-ink)">Как</span><span class="name">Подход и ключевые вехи</span></div>
+      <p class="q">Как пойдём к цели? Варианты решений с учётом сроков и затрат, выбранный подход, этапы.</p>
+      <textarea data-k="how" placeholder="…"></textarea>
+      <details class="collapsible" open>
+        <summary class="mlabel">Ключевые вехи<span class="chev" aria-hidden="true">▾</span></summary>
+        <div class="mini">
+          <div class="mrow"><input type="text" data-k="ms1" placeholder="Веха 1 — что готово"><input type="date" data-k="ms1d"></div>
+          <div class="mrow"><input type="text" data-k="ms2" placeholder="Веха 2"><input type="date" data-k="ms2d"></div>
+          <div class="mrow"><input type="text" data-k="ms3" placeholder="Запуск / финал"><input type="date" data-k="ms3d"></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="card">
+      <div class="row"><span class="chip" style="background:var(--purple-bg);color:var(--purple-ink)">Кто</span><span class="name">Команда (RACI)</span></div>
+      <p class="q">Распределение ролей, полномочий и ответственности.</p>
+      <div class="raci">
+        <div class="field"><span>Решает (A)</span><input type="text" data-k="raci_a" placeholder="DRI / кто решает"></div>
+        <div class="field"><span>Делают (R)</span><input type="text" data-k="raci_r" placeholder="исполнители"></div>
+        <div class="field"><span>Информируем (I)</span><input type="text" data-k="raci_i" placeholder="кого держим в курсе"></div>
+        <div class="field"><span>Критично влияет</span><input type="text" data-k="raci_c" placeholder="кто может повлиять"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row"><span class="chip" style="background:var(--amber-bg);color:var(--amber-ink)">Чем</span><span class="name">Ресурсы</span></div>
+      <p class="q">Чем нужно обеспечить участников? Люди, материалы, помещения, оборудование, информация.</p>
+      <textarea data-k="res" placeholder="…"></textarea>
+      <div class="money">
+        <div class="field"><span>Бюджет, ₽</span><input type="text" data-k="budget" placeholder="0"></div>
+        <div class="field"><span>Команда, чел.</span><input type="text" data-k="team" placeholder="0"></div>
+      </div>
+    </div>
+
+    <div class="card full">
+      <div class="row"><span class="chip" style="background:var(--gray-bg);color:var(--gray-ink)">Условия</span><span class="name">Ограничения, критерии успеха и провала</span></div>
+      <p class="q">Условия выполнения: ограничения (сроки, бюджет, характеристики продукта), факторы среды, возможности. Критерии успешности и критерии провала.</p>
+      <textarea data-k="cond" placeholder="…"></textarea>
+      <p class="mlabel">Топ-3 риска → митигация</p>
+      <div class="mini">
+        <div class="rrow"><input type="text" data-k="risk1" placeholder="Риск 1"><input type="text" data-k="risk1m" placeholder="Что делаем"></div>
+        <div class="rrow"><input type="text" data-k="risk2" placeholder="Риск 2"><input type="text" data-k="risk2m" placeholder="Что делаем"></div>
+        <div class="rrow"><input type="text" data-k="risk3" placeholder="Риск 3"><input type="text" data-k="risk3m" placeholder="Что делаем"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-card">
+    <div class="field"><span>Первый шаг — ближайшее действие</span><input type="text" data-k="step" placeholder="Что делаем сразу после старта"></div>
+    <div class="field"><span>Ответственный</span><input type="text" data-k="step_who"></div>
+    <div class="field"><span>Срок</span><input type="date" data-k="step_date"></div>
+    <div class="field"><span>Решение</span><select data-k="decision"><option value="">—</option><option>На рассмотрении</option><option>Go</option><option>No-go</option><option>На доработку</option></select></div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var KEY='pentabasis-passport-v3', store={};
+  try{store=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){}
+  var fields=document.querySelectorAll('[data-k]');
+  var saved=document.getElementById('saved'), t;
+  function flag(){if(!saved)return;saved.textContent='Сохранено ✓';clearTimeout(t);t=setTimeout(function(){saved.textContent='Изменения сохраняются автоматически';},1200);}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+  fields.forEach(function(el){
+    var k=el.getAttribute('data-k');
+    if(store[k]!=null&&store[k]!=='')el.value=store[k];
+    function h(){store[k]=el.value;save();flag();}
+    el.addEventListener('input',h);el.addEventListener('change',h);
+  });
+  var durl=document.querySelector('[data-k="deal_url"]'), da=document.getElementById('deal-open');
+  function syncDeal(){var u=(durl.value||'').trim(); if(u&&!/^https?:\/\//i.test(u))u='https://'+u; da.href=u||'#'; da.style.opacity=u?'1':'.35'; da.style.pointerEvents=u?'auto':'none';}
+  if(durl&&da){durl.addEventListener('input',syncDeal);syncDeal();}
+  var p=document.getElementById('print'); if(p)p.addEventListener('click',function(){window.print();});
+  var c=document.getElementById('clear'); if(c)c.addEventListener('click',function(){
+    if(!window.confirm('Очистить все поля паспорта? Это действие нельзя отменить.'))return;
+    fields.forEach(function(el){el.value='';});store={};try{localStorage.removeItem(KEY);}catch(e){}
+    if(da){da.href='#';da.style.opacity='.35';da.style.pointerEvents='none';}
+  });
+})();
+</script>
+</body>
+</html>
