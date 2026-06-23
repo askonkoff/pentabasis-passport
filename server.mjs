@@ -1,20 +1,18 @@
-// Local dev server — `npm run dev` → http://localhost:3000
+// Production + local server (always-on Node process — for Railway).
 //
-// Emulates just enough of Vercel to run the SAME api/ handlers locally:
-//   - parses JSON bodies and the /api/passport/:id param
-//   - adapts Node's (req, res) to the Vercel-style res.status().json() API
-//   - rewrites /p/<id> to index.html (mirrors vercel.json)
-// With no DATABASE_URL set, the store falls back to in-memory (see api/_store.js).
+// Serves index.html, routes /api/passport/* to the SAME handlers used on
+// serverless (api/), and rewrites /p/<id> to index.html. Uses Postgres when
+// DATABASE_URL is set (Railway injects it), else in-memory (see api/_store.js).
 
 import http from 'node:http'
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-import createHandler from '../api/passport/index.js'
-import idHandler from '../api/passport/[id].js'
+import createHandler from './api/passport/index.js'
+import idHandler from './api/passport/[id].js'
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const ROOT = path.dirname(fileURLToPath(import.meta.url))
 const PORT = process.env.PORT || 3000
 
 const CTYPE = {
@@ -95,5 +93,5 @@ const server = http.createServer(async (req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log(`Пентабазис-паспорт · dev → http://localhost:${PORT}`)
+  console.log(`Пентабазис-паспорт · http://localhost:${PORT}`)
 })
