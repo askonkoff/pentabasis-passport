@@ -29,6 +29,13 @@ body{font-family:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Ar
 .toolbar .primary:hover{background:#c14d27}
 .toolbar .spacer{flex:1}
 .toolbar .saved{font-size:12px;color:var(--hint)}
+.sharebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#eef6f2;border:1px solid #d6e7de;border-radius:9px;padding:9px 13px;margin:0 0 16px}
+.sharebar>.lab{font-size:12.5px;font-weight:600;color:var(--teal-ink)}
+.sharebar input{flex:1;min-width:200px;font:inherit;font-size:12.5px;color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:6px 9px;background:#fff}
+.sharebar button{font:inherit;font-size:12px;font-weight:600;color:#fff;background:var(--coral);border:1px solid var(--coral);border-radius:7px;padding:7px 13px;cursor:pointer}
+.sharebar button:hover{background:#c14d27}
+.sharebar .hint{flex-basis:100%;color:var(--hint);font-size:11.5px;margin:0}
+@media print{.sharebar{display:none}}
 header.doc{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;border-bottom:2px solid var(--ink);padding-bottom:11px;margin-bottom:15px}
 .kick{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--coral);font-weight:600;margin:0 0 5px}
 h1{font-size:25px;font-weight:700;margin:0;letter-spacing:-.01em}
@@ -110,10 +117,19 @@ textarea:focus{outline:none;border-color:var(--coral)}
 <div class="page">
 
   <div class="toolbar">
-    <button class="primary" id="print">Печать / сохранить PDF</button>
+    <button class="primary" id="share">Поделиться · получить ссылку</button>
+    <button id="new">Новый паспорт</button>
+    <button id="print">Печать / PDF</button>
     <button id="clear">Очистить</button>
     <span class="spacer"></span>
-    <span class="saved" id="saved">Изменения сохраняются автоматически</span>
+    <span class="saved" id="saved">Черновик в этом браузере</span>
+  </div>
+
+  <div class="sharebar" id="sharebar" hidden>
+    <span class="lab">Ссылка на паспорт</span>
+    <input id="shareurl" type="text" readonly onclick="this.select()">
+    <button id="copylink" type="button">Копировать</button>
+    <p class="hint">Кто откроет ссылку — видит и редактирует этот паспорт. Ссылка неугадываемая, поэтому снаружи паспорт недоступен.</p>
   </div>
 
   <header class="doc">
@@ -241,26 +257,104 @@ textarea:focus{outline:none;border-color:var(--coral)}
 
 <script>
 (function(){
-  var KEY='pentabasis-passport-v3', store={};
-  try{store=JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){}
+  var KEY='pentabasis-passport-v3';
+  var API='/api/passport';
   var fields=document.querySelectorAll('[data-k]');
-  var saved=document.getElementById('saved'), t;
-  function flag(){if(!saved)return;saved.textContent='Сохранено ✓';clearTimeout(t);t=setTimeout(function(){saved.textContent='Изменения сохраняются автоматически';},1200);}
-  function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){}}
+  var savedEl=document.getElementById('saved');
+  var bar=document.getElementById('sharebar');
+  var urlEl=document.getElementById('shareurl');
+  var flagT, saveT, creating=false, loadFailed=false, store={};
+
+  function idFromPath(){var m=location.pathname.match(/\/p\/([^\/?#]+)/);return m?decodeURIComponent(m[1]):null;}
+  var pid=idFromPath();
+
+  function defaultMsg(){
+    if(loadFailed)return 'Не удалось загрузить — обновите страницу';
+    return pid?'Изменения сохраняются в облаке ✓':'Черновик в этом браузере — нажмите «Поделиться», чтобы сохранить';
+  }
+  function flag(msg){if(!savedEl)return;savedEl.textContent=msg;clearTimeout(flagT);flagT=setTimeout(function(){savedEl.textContent=defaultMsg();},1500);}
+
+  function collect(){var o={};fields.forEach(function(el){o[el.getAttribute('data-k')]=el.value;});return o;}
+  function fill(s){fields.forEach(function(el){var k=el.getAttribute('data-k');if(s[k]!=null)el.value=s[k];});}
+  function loadLocal(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')||{};}catch(e){return {};}}
+  function saveLocal(s){try{localStorage.setItem(KEY,JSON.stringify(s));}catch(e){}}
+  function clearLocal(){try{localStorage.removeItem(KEY);}catch(e){}}
+
+  function req(method,url,payload){
+    return fetch(url,{method:method,headers:payload?{'Content-Type':'application/json'}:undefined,body:payload?JSON.stringify(payload):undefined})
+      .then(function(r){if(!r.ok)throw r;return r.json();});
+  }
+  function apiGet(id){return req('GET',API+'/'+encodeURIComponent(id));}
+  function apiCreate(data){return req('POST',API,{data:data});}
+  function apiUpdate(id,data){return req('PUT',API+'/'+encodeURIComponent(id),{data:data});}
+
+  function scheduleSave(){
+    saveLocal(store);
+    if(pid&&!loadFailed){
+      clearTimeout(saveT);
+      saveT=setTimeout(function(){
+        apiUpdate(pid,store).then(function(){flag('Сохранено ✓');}).catch(function(){flag('Нет сети — черновик в браузере');});
+      },700);
+    }else if(!pid){flag('Черновик сохранён');}
+  }
+
+  function showBar(id){if(!bar)return '';var url=location.origin+'/p/'+id;urlEl.value=url;bar.hidden=false;return url;}
+
   fields.forEach(function(el){
-    var k=el.getAttribute('data-k');
-    if(store[k]!=null&&store[k]!=='')el.value=store[k];
-    function h(){store[k]=el.value;save();flag();}
+    function h(){store[el.getAttribute('data-k')]=el.value;scheduleSave();}
     el.addEventListener('input',h);el.addEventListener('change',h);
   });
+
   var durl=document.querySelector('[data-k="deal_url"]'), da=document.getElementById('deal-open');
-  function syncDeal(){var u=(durl.value||'').trim(); if(u&&!/^https?:\/\//i.test(u))u='https://'+u; da.href=u||'#'; da.style.opacity=u?'1':'.35'; da.style.pointerEvents=u?'auto':'none';}
-  if(durl&&da){durl.addEventListener('input',syncDeal);syncDeal();}
-  var p=document.getElementById('print'); if(p)p.addEventListener('click',function(){window.print();});
+  function syncDeal(){if(!durl||!da)return;var u=(durl.value||'').trim();if(u&&!/^https?:\/\//i.test(u))u='https://'+u;da.href=u||'#';da.style.opacity=u?'1':'.35';da.style.pointerEvents=u?'auto':'none';}
+  if(durl&&da){durl.addEventListener('input',syncDeal);}
+
+  if(pid){
+    if(savedEl)savedEl.textContent='Загрузка…';
+    apiGet(pid).then(function(row){
+      store=row.data||{};fill(store);syncDeal();showBar(pid);if(savedEl)savedEl.textContent=defaultMsg();
+    }).catch(function(err){
+      loadFailed=true;
+      if(savedEl)savedEl.textContent=(err&&err.status===404)?'Паспорт не найден':'Не удалось загрузить — нет сети';
+    });
+  }else{
+    store=loadLocal();fill(store);syncDeal();if(savedEl)savedEl.textContent=defaultMsg();
+  }
+
+  function netErr(){alert('Не удалось сохранить в облако.\nПроверьте, что бэкенд развёрнут (Vercel + БД) и есть сеть.');}
+  var shareBtn=document.getElementById('share');
+  if(shareBtn)shareBtn.addEventListener('click',function(){
+    store=collect();
+    function done(id){
+      pid=id;var url=showBar(id);history.replaceState(null,'','/p/'+id);clearLocal();
+      if(navigator.clipboard&&url)navigator.clipboard.writeText(url).then(function(){flag('Ссылка скопирована ✓');},function(){flag('Сохранено в облаке ✓');});
+      else flag('Сохранено в облаке ✓');
+    }
+    if(pid){apiUpdate(pid,store).then(function(){done(pid);}).catch(netErr);}
+    else{if(creating)return;creating=true;apiCreate(store).then(function(r){creating=false;done(r.id);}).catch(function(e){creating=false;netErr(e);});}
+  });
+
+  var copyBtn=document.getElementById('copylink');
+  if(copyBtn)copyBtn.addEventListener('click',function(){
+    urlEl.select();
+    if(navigator.clipboard)navigator.clipboard.writeText(urlEl.value).then(function(){copyBtn.textContent='Скопировано ✓';setTimeout(function(){copyBtn.textContent='Копировать';},1400);});
+    else{try{document.execCommand('copy');}catch(e){}}
+  });
+
+  var newBtn=document.getElementById('new');
+  if(newBtn)newBtn.addEventListener('click',function(){
+    if(!pid&&Object.keys(store).some(function(k){return store[k];})&&!window.confirm('Открыть новый паспорт? Текущий черновик не сохранён в облаке.'))return;
+    location.href='/';
+  });
+
+  var pr=document.getElementById('print'); if(pr)pr.addEventListener('click',function(){window.print();});
+
   var c=document.getElementById('clear'); if(c)c.addEventListener('click',function(){
-    if(!window.confirm('Очистить все поля паспорта? Это действие нельзя отменить.'))return;
-    fields.forEach(function(el){el.value='';});store={};try{localStorage.removeItem(KEY);}catch(e){}
+    var msg=pid?'Очистить все поля этого паспорта в облаке? Данные будут перезаписаны пустыми.':'Очистить все поля черновика?';
+    if(!window.confirm(msg))return;
+    fields.forEach(function(el){el.value='';});store={};
     if(da){da.href='#';da.style.opacity='.35';da.style.pointerEvents='none';}
+    if(pid)scheduleSave();else{clearLocal();flag('Очищено');}
   });
 })();
 </script>

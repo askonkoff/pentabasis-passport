@@ -1,0 +1,13 @@
+{
+  "name": "pentabasis-passport",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Пентабазис · заполняемый паспорт проекта с облачным сохранением (Vercel + Postgres)",
+  "scripts": {
+    "dev": "node scripts/dev-server.mjs"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}
